@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "vitest.config.ts"]
+}

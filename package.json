@@ -1,0 +1,62 @@
+{
+  "name": "ledgerline",
+  "version": "0.1.0",
+  "description": "A double-entry accounting engine with a REST API and CLI, in strict TypeScript.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "bin": {
+    "ledgerline": "./dist/interfaces/cli/main.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "accounting",
+    "double-entry",
+    "ledger",
+    "bookkeeping",
+    "fintech",
+    "typescript"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "clean": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "cli": "node --disable-warning=ExperimentalWarning --import ./tools/ts-resolve.mjs --experimental-transform-types src/interfaces/cli/main.ts",
+    "serve": "node --disable-warning=ExperimentalWarning --import ./tools/ts-resolve.mjs --experimental-transform-types src/interfaces/http/main.ts",
+    "demo": "node --disable-warning=ExperimentalWarning --import ./tools/ts-resolve.mjs --experimental-transform-types src/interfaces/cli/main.ts demo",
+    "verify": "npm run typecheck && npm run lint && npm run test",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
+  },
+  "dependencies": {
+    "fastify": "^5.12.5",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/node": "^26.6.3",
+    "@vitest/coverage-v8": "^5.0.2",
+    "fast-check": "^4.10.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.2"
+  }
+}
