@@ -4,7 +4,6 @@ A double-entry accounting engine with a browser app, a REST API and a CLI.
 Strict TypeScript, exact money, no build step.
 
 [![CI](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml/badge.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/TanimowoObaloluwaDavid/ledgerline/branch/main/graph/badge.svg)](https://codecov.io/gh/TanimowoObaloluwaDavid/ledgerline)
 [![npm](https://img.shields.io/npm/v/ledgerline.svg)](https://www.npmjs.com/package/ledgerline)
 [![GitHub release](https://img.shields.io/github/v/release/TanimowoObaloluwaDavid/ledgerline.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/releases/latest)
 [![Node](https://img.shields.io/badge/node-22.15%20%7C%2024-5FA04E.svg)](https://nodejs.org)

@@ -69,10 +69,14 @@ jobs:
       - run: npm ci
       - run: npm run test:coverage
       # Authenticated with a GitHub OIDC token rather than a stored secret, so
-      # there is no CODECOV_TOKEN to leak or rotate. Codecov's own badge needs
-      # the repo activated once at codecov.io before it will report a number.
+      # there is no CODECOV_TOKEN to leak or rotate.
+      #
+      # The upload only succeeds once the repository has been activated at
+      # codecov.io (sign in with GitHub, add the repo). Until then Codecov
+      # answers "Repository not found", so this step is allowed to fail: it must
+      # not turn a coverage-reporting problem into a red build.
       - uses: codecov/codecov-action@v5
         with:
           use_oidc: true
           files: ./coverage/lcov.info
-          fail_ci_if_error: true
+          fail_ci_if_error: false
