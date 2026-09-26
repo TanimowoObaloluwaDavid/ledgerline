@@ -57,6 +57,9 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -65,14 +68,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:coverage
-      # Tokenless for a public repository. If this ever goes private, add a
-      # CODECOV_TOKEN secret and pass it as `token`.
+      # Authenticated with a GitHub OIDC token rather than a stored secret, so
+      # there is no CODECOV_TOKEN to leak or rotate. Codecov's own badge needs
+      # the repo activated once at codecov.io before it will report a number.
       - uses: codecov/codecov-action@v5
         with:
+          use_oidc: true
           files: ./coverage/lcov.info
-          fail_ci_if_error: false
-      - uses: actions/upload-artifact@v7
-        with:
-          name: coverage-report
-          path: coverage/
-          if-no-files-found: ignore
+          fail_ci_if_error: true
