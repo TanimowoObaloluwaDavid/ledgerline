@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A double-entry accounting engine with a REST API, browser app and CLI, in strict TypeScript.",
   "type": "module",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "BUSL-1.1",
   "engines": {
     "node": ">=22.15.0"
   },

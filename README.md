@@ -5,18 +5,18 @@ Strict TypeScript, exact money, no build step.
 
 [![CI](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml/badge.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-22.15%20%7C%2024-5FA04E.svg)](https://nodejs.org)
-[![License: Proprietary](https://img.shields.io/badge/license-proprietary-red.svg)](LICENSE)
+[![License: BUSL 1.1](https://img.shields.io/badge/license-BUSL--1.1-yellow.svg)](LICENSE)
 
 Ledgerline keeps books the way an accountant would want them kept: money is exact
 integer minor units and never a float, the journal is append-only, every entry
 balances per currency, exchange rates are dated rather than assumed, and a closed
 period stays closed.
 
-**Ledgerline is my software, I own it, and it is not open source.** You may read
-it, run the tests, and tell me what you want to build with it. You may not copy
-it, fork it into something of your own, run it in production, or use it
-commercially without my written permission.
-[How to ask](#ownership-and-contact).
+**Ledgerline is my software and I own it.** The code is public and you are free to
+read it, fork it, and use it for evaluation, testing and your own internal
+business. Selling it, hosting it as a competing service, or shipping it inside a
+commercial product needs my permission — and after four years it becomes Apache
+2.0 for everyone. The details are in [Ownership and contact](#ownership-and-contact).
 
 - [Try it](#try-it)
 - [What's in the box](#whats-in-the-box)
@@ -39,9 +39,8 @@ commercially without my written permission.
 
 ## Try it
 
-Clone it and run the demo. Reading the code and running it locally to evaluate
-it is allowed without permission — see [Ownership and contact](#ownership-and-contact)
-for what is not.
+Clone it and run the demo. The [Business Source License](LICENSE) lets everyone
+read, fork, modify and evaluate the code, so have at it:
 
 ```bash
 git clone https://github.com/TanimowoObaloluwaDavid/ledgerline.git
@@ -234,8 +233,11 @@ full reference is in [docs/API.md](docs/API.md).
 
 ## As a library
 
-Depending on Ledgerline is *using* it, so it needs my permission first — see
-[Ownership and contact](#ownership-and-contact). Once you have it:
+`npm install ledgerline` is covered by the
+[Business Source License](LICENSE) — free for your own internal business use,
+and fine in a product you sell, as long as you are not competing with a paid
+offering of mine. See [Ownership and contact](#ownership-and-contact) if you want
+to be sure, or to buy a licence.
 
 ```bash
 npm install ledgerline
@@ -377,42 +379,47 @@ Ledgerline is my software. I designed it, I wrote it, I maintain it, and I hold 
 copyright. There is no company behind it and no team: one maintainer, which is
 also why it moves when I have an evening free.
 
-**It is proprietary, and there is no open-source licence here.** The
-[LICENSE](LICENSE) file is the whole of the permission you have, and it is short:
-no copying, no forking, no modification, no redistribution, no commercial use, no
-running it in production, without my written permission. "Open source" is not
-what this is, and I would rather you knew that on line one than after you had
-built something on top of it.
+**It is source-available, not open source.** It is licensed under the
+[Business Source License 1.1](LICENSE), which is the "public repo, commercial use
+gated" model:
 
-**What you can do right now, with no paperwork:**
+| You may, today, with no paperwork | You need my permission for |
+| --- | --- |
+| Read the code, and fork it | Selling it, or licensing it onward |
+| Run it, and use it in production for your own business | Hosting it as a service for third parties |
+| Use it in a product you sell | Any product that competes with a paid offering of mine |
+| Modify it, and send me a pull request | Anything the grant above does not clearly cover |
 
-- Read the code to decide whether you want it.
-- Run the tests, and run it locally to look around.
-- Quote short excerpts, with attribution, in an article or a talk.
-- Report bugs, request features, and send me a pull request.
+Two things worth knowing about how this licence works. It applies **per version**,
+and each version has its own four-year clock. And on the change date that version
+becomes **Apache 2.0** — the terms I have now stop applying to it and it is
+unrestricted from then on. That is the deal: you get the source now, and it cannot
+be held hostage forever.
 
-**What needs my written permission:** everything else. Using it in a product,
-running it for a business, hosting it as a service, or building on top of it.
-Most requests I say yes to, and I would rather hear the idea than have you
-reimplement it badly.
+If you want to use it in a way the table does not clearly allow, email me and
+buy a licence, or ask and I will usually say yes. I would much rather grant
+permission than have you reimplement a ledger badly.
 
 | What you want | Where |
 | --- | --- |
-| Permission to use it, or a paid licence | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
+| Permission, or a commercial licence | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
 | A bug report or a feature request | [Open an issue](https://github.com/TanimowoObaloluwaDavid/ledgerline/issues/new) |
-| To just read the code | No permission needed |
+| To read, fork or evaluate the code | No permission needed |
 
 I answer email, and I read every issue. A bug with a reproduction gets fixed
 first; a reply can take a few days, because this is one person with one inbox.
 
 **One honest note:** the versions published before this change went out under the
 MIT licence. That grant is perpetual and I cannot withdraw it, so it still covers
-those releases. Everything released after today is under the terms above.
+those releases. Everything released after is under the terms above.
 
 — **Tanimowo Obaloluwa**, author and maintainer
 
 ## License
 
-**Proprietary. All rights reserved.** Copyright (c) 2026 Tanimowo Obaloluwa. Use,
-copying, modification and redistribution require written permission. The full
-terms are in [LICENSE](LICENSE).
+**Business Source License 1.1.** Copyright (c) 2026 Tanimowo Obaloluwa.
+
+Change date: four years from publication of each version. Change licence: Apache
+2.0. Full terms, including the additional use grant, are in
+[LICENSE](LICENSE) — it is about a page and a half, and it is worth the two
+minutes.
