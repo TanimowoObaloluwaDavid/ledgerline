@@ -1,21 +1,62 @@
-MIT License
+Ledgerline
+Copyright (c) 2026 Tanimowo Obaloluwa. All rights reserved.
 
-Copyright (c) 2026 Tanimowo Obaloluwa
+NOTHING HERE IS OPEN SOURCE. No open-source licence applies to this software, and
+none of the permissions below are granted by any licence file elsewhere in this
+repository.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. NO PERMISSION, NO USE
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+   No permission is granted to use, copy, modify, translate, adapt, publish,
+   distribute, sublicense, sell, host, or create derivative works of this
+   software, in source form or in binary form, for any purpose whatsoever,
+   including but not limited to commercial use, internal business use, SaaS,
+   hosting, or use within another product.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   Doing any of the above requires my prior written permission. Until you have
+   it, you have no licence to do any of it.
+
+2. WHAT IS ALLOWED WITHOUT PERMISSION
+
+   You may read the source code in this repository in order to evaluate it.
+
+   You may run the tests, and run the software locally for your own evaluation
+   and demonstration.
+
+   You may quote short excerpts from the source, with attribution, in review,
+   discussion, articles or talks.
+
+   You may report bugs, propose features, and contribute changes back to this
+   repository as pull requests.
+
+   Forking this repository to read or evaluate the code, or to submit a pull
+   request, is not permission to use the code. Those are evaluation activities,
+   not licences.
+
+3. PERMISSION
+
+   Permission is granted in writing, by the copyright holder, and applies only
+   to the version and scope it names. Contact: codex5358@gmail.com
+
+4. NO WARRANTY
+
+   THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT. THE COPYRIGHT
+   HOLDER DOES NOT WARRANT THAT THE SOFTWARE WILL BE ERROR-FREE OR UNINTERRUPTED,
+   AND MAKES NO CLAIM OF FITNESS FOR ANY PARTICULAR PURPOSE.
+
+5. NO LIABILITY
+
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES,
+   DATA LOSS, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+   OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+   OR OTHER DEALINGS IN THE SOFTWARE.
+
+6. PREVIOUS RELEASES
+
+   Releases of this software published before the date of this notice were
+   distributed under the MIT licence. That licence granted a perpetual,
+   irrevocable permission to those recipients, and it is not withdrawn by this
+   notice: the MIT terms continue to apply to those earlier versions. This notice
+   applies to every version released after it.

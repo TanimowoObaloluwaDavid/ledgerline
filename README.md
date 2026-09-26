@@ -5,17 +5,18 @@ Strict TypeScript, exact money, no build step.
 
 [![CI](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml/badge.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml)
 [![Node](https://img.shields.io/badge/node-22.15%20%7C%2024-5FA04E.svg)](https://nodejs.org)
-[![License: MIT](https://img.shields.io/badge/license-MIT-3D7EA6.svg)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/license-proprietary-red.svg)](LICENSE)
 
 Ledgerline keeps books the way an accountant would want them kept: money is exact
 integer minor units and never a float, the journal is append-only, every entry
 balances per currency, exchange rates are dated rather than assumed, and a closed
 period stays closed.
 
-**Ledgerline is my software and I own it.** You may use it under the MIT licence
-below without ever talking to me. If you want something the licence does not
-cover — help, a feature, a tailored build, or just to say hello —
-[get in touch](#ownership-and-contact).
+**Ledgerline is my software, I own it, and it is not open source.** You may read
+it, run the tests, and tell me what you want to build with it. You may not copy
+it, fork it into something of your own, run it in production, or use it
+commercially without my written permission.
+[How to ask](#ownership-and-contact).
 
 - [Try it](#try-it)
 - [What's in the box](#whats-in-the-box)
@@ -37,6 +38,10 @@ cover — help, a feature, a tailored build, or just to say hello —
 - [License](#license)
 
 ## Try it
+
+Clone it and run the demo. Reading the code and running it locally to evaluate
+it is allowed without permission — see [Ownership and contact](#ownership-and-contact)
+for what is not.
 
 ```bash
 git clone https://github.com/TanimowoObaloluwaDavid/ledgerline.git
@@ -229,6 +234,9 @@ full reference is in [docs/API.md](docs/API.md).
 
 ## As a library
 
+Depending on Ledgerline is *using* it, so it needs my permission first — see
+[Ownership and contact](#ownership-and-contact). Once you have it:
+
 ```bash
 npm install ledgerline
 ```
@@ -369,29 +377,42 @@ Ledgerline is my software. I designed it, I wrote it, I maintain it, and I hold 
 copyright. There is no company behind it and no team: one maintainer, which is
 also why it moves when I have an evening free.
 
-**The MIT licence is the deal, and it is a real one.** Use Ledgerline for
-anything, commercial work included. Modify it, put it inside your own product,
-change my code. The only thing you owe is the copyright notice. Nothing in the
-licence is contingent on contacting me, and I would not want it to be.
+**It is proprietary, and there is no open-source licence here.** The
+[LICENSE](LICENSE) file is the whole of the permission you have, and it is short:
+no copying, no forking, no modification, no redistribution, no commercial use, no
+running it in production, without my written permission. "Open source" is not
+what this is, and I would rather you knew that on line one than after you had
+built something on top of it.
 
-**So why ask you to get in touch?** For everything the licence does not cover:
+**What you can do right now, with no paperwork:**
 
-- You want help installing it, or a second opinion on your accounts and closing.
-- You want a feature, a fix, or a version shaped around your workflow.
-- You want support with a deadline attached, or someone answerable for it.
-- You want to sponsor the work, or hire me to build the next thing.
-- You just want to say hello. That is allowed too.
+- Read the code to decide whether you want it.
+- Run the tests, and run it locally to look around.
+- Quote short excerpts, with attribution, in an article or a talk.
+- Report bugs, request features, and send me a pull request.
+
+**What needs my written permission:** everything else. Using it in a product,
+running it for a business, hosting it as a service, or building on top of it.
+Most requests I say yes to, and I would rather hear the idea than have you
+reimplement it badly.
 
 | What you want | Where |
 | --- | --- |
-| A bug, a question, a feature request | [Open an issue](https://github.com/TanimowoObaloluwaDavid/ledgerline/issues/new) |
-| Anything that needs a reply from a person | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
+| Permission to use it, or a paid licence | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
+| A bug report or a feature request | [Open an issue](https://github.com/TanimowoObaloluwaDavid/ledgerline/issues/new) |
+| To just read the code | No permission needed |
 
-I read both, and I answer email. A bug with a reproduction gets fixed first; a
-reply can take a few days, because this is one person with one inbox.
+I answer email, and I read every issue. A bug with a reproduction gets fixed
+first; a reply can take a few days, because this is one person with one inbox.
+
+**One honest note:** the versions published before this change went out under the
+MIT licence. That grant is perpetual and I cannot withdraw it, so it still covers
+those releases. Everything released after today is under the terms above.
 
 — **Tanimowo Obaloluwa**, author and maintainer
 
 ## License
 
-MIT © 2026 Tanimowo Obaloluwa. The full text is in [LICENSE](LICENSE).
+**Proprietary. All rights reserved.** Copyright (c) 2026 Tanimowo Obaloluwa. Use,
+copying, modification and redistribution require written permission. The full
+terms are in [LICENSE](LICENSE).
