@@ -10,6 +10,13 @@ export interface MoneyJson {
   readonly minor: string;
   /** Human-facing decimal form, e.g. `-1234.56`. */
   readonly decimal: string;
+  /**
+   * Minor units per major unit, as a power of ten: 2 for USD, 0 for JPY, 3 for
+   * BHD. A client that wants to add two amounts together needs this to scale
+   * `minor` back into a decimal, and should not have to ship its own table of
+   * currency exponents to do it.
+   */
+  readonly exponent: number;
 }
 
 /**
@@ -261,6 +268,7 @@ export class Money {
       currency: this.currency,
       minor: this.minor.toString(),
       decimal: this.toDecimalString(),
+      exponent: exponentOf(this.currency),
     };
   }
 

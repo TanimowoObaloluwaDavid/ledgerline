@@ -277,4 +277,5 @@ interface MoneyJsonLike {
   readonly currency: string;
   readonly minor: string;
   readonly decimal: string;
+  readonly exponent: number;
 }

@@ -18,6 +18,8 @@ ENV NODE_ENV=production \
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
+# The web app is plain files, not build output, so it is copied as it is.
+COPY public ./public
 
 # node:sqlite is built in, so there is nothing to compile and no native module to
 # carry between stages.

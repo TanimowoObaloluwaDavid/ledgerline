@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { VersionConflictError } from '../../application/ports.js';
@@ -18,6 +19,7 @@ import {
   presentRule,
   presentTrialBalance,
 } from './present.js';
+import { registerWeb } from './web.js';
 
 /**
  * REST surface.
@@ -189,6 +191,12 @@ function idempotencyKey(request: FastifyRequest): { idempotencyKey?: string } {
 export interface ServerOptions {
   readonly service: LedgerService;
   readonly logger?: boolean;
+  /**
+   * Where the web app lives, or `null` to serve the API on its own. Defaults to
+   * `public/` beside the process working directory, which is where `npm start`
+   * and the container image both put it.
+   */
+  readonly webRoot?: string | null;
 }
 
 export function buildServer(options: ServerOptions): FastifyInstance {
@@ -219,6 +227,12 @@ export function buildServer(options: ServerOptions): FastifyInstance {
   // typed the address into a browser. This is the smallest thing that makes the
   // running server explain itself.
   app.get('/', async (_request, reply) => reply.type('text/html; charset=utf-8').send(indexPage()));
+
+  const webRoot =
+    options.webRoot === null ? null : (options.webRoot ?? resolve(process.cwd(), 'public'));
+  if (webRoot !== null) {
+    registerWeb(app, { root: webRoot });
+  }
 
   app.get('/v1/accounts', async (request) => {
     const type = query(request).type;
@@ -527,6 +541,7 @@ function indexPage(): string {
 <body>
   <h1>Ledgerline</h1>
   <p class="lede">A double-entry accounting engine. The books are balanced; the numbers below are live.</p>
+  <p><a href="/app"><strong>Open the book &rarr;</strong></a> &mdash; post entries and read the reports in a browser.</p>
   <table>
     <thead><tr><th>Method</th><th>Path</th><th>What it does</th></tr></thead>
     <tbody>

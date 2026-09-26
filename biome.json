@@ -68,6 +68,16 @@
           }
         }
       }
+    },
+    {
+      "includes": ["public/assets/*.css"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDescendingSpecificity": "off"
+          }
+        }
+      }
     }
   ]
 }

@@ -9,12 +9,15 @@ Base path `/v1`. Requests and responses are JSON. Start the server with
 and as an object on the way out, so no value ever touches a JavaScript float:
 
 ```json
-{ "currency": "USD", "minor": "1250000", "decimal": "12500.00" }
+{ "currency": "USD", "minor": "1250000", "decimal": "12500.00", "exponent": 2 }
 ```
 
 `minor` is the exact integer in the currency's smallest unit, as a string
 because JSON numbers are doubles and `9007199254740993` is not exactly
-representable. `decimal` is the same value formatted for humans.
+representable. `decimal` is the same value formatted for humans. `exponent` is
+how many minor units make one major unit — 2 for USD, 0 for JPY, 3 for BHD — so a
+client that adds two amounts together does not have to ship its own table of
+currency exponents.
 
 **Dates are `YYYY-MM-DD`** strings, validated by the same `isIsoDate` the engine
 uses, so the API and the domain can never disagree about a calendar.
@@ -49,6 +52,21 @@ creates something. The first call returns `201` with `created: true`; a repeat o
 the same key returns `200` with `created: false` and the original object. Keys
 are scoped per command, and a key derived deterministically means a retry after a
 timeout cannot double-post.
+
+## The browser app
+
+Two routes are not part of the JSON API:
+
+| Route | What it is |
+| --- | --- |
+| `GET /` | An index of every route below, with links |
+| `GET /app` | The book itself: post entries, read the reports |
+
+The app is plain ES modules in `public/`, served by the same process. Asset URLs
+are matched against a fixed list, so there is no path traversal to reason about;
+`LEDGERLINE_WEB_DIR=none` turns it off. Every response carries
+`default-src 'none'; script-src 'self'; style-src 'self'`, which the app can
+afford because it uses no inline script or style.
 
 ## Health
 

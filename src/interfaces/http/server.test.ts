@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LedgerService } from '../../application/service.js';
@@ -97,6 +98,7 @@ describe('HTTP API', () => {
       currency: 'USD',
       minor: '123456',
       decimal: '1234.56',
+      exponent: 2,
     });
   });
 
@@ -272,5 +274,85 @@ describe('HTTP API', () => {
 describe('statusForError', () => {
   it('falls back to 500 for anything unrecognised', () => {
     expect(statusForError(new Error('boom'))).toBe(500);
+  });
+});
+
+describe('web app', () => {
+  const webRoot = fileURLToPath(new URL('../../../public', import.meta.url));
+  let app: FastifyInstance;
+
+  beforeEach(async () => {
+    const service = new LedgerService(new InMemoryStore(), {
+      functionalCurrency: 'USD',
+      retainedEarningsCode: '3200',
+      fxClearingCode: '3210',
+    });
+    app = buildServer({ service, webRoot });
+    await app.ready();
+  });
+
+  afterEach(async () => {
+    await app.close();
+  });
+
+  it('serves the app shell with a policy that forbids inline script', async () => {
+    const response = await app.inject({ method: 'GET', url: '/app' });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.headers['content-security-policy']).toContain("script-src 'self'");
+    expect(response.body).toContain('<title>Ledgerline</title>');
+    expect(response.body).toContain('/app/app.js');
+    expect(response.body).not.toMatch(/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?\S[\s\S]*?<\/script>/);
+  });
+
+  it('serves the module graph the shell asks for', async () => {
+    for (const [url, type] of [
+      ['/app/app.js', 'text/javascript'],
+      ['/app/lib/money.js', 'text/javascript'],
+      ['/app/lib/api.js', 'text/javascript'],
+      ['/app/lib/dom.js', 'text/javascript'],
+      ['/app/assets/app.css', 'text/css'],
+    ] as const) {
+      const response = await app.inject({ method: 'GET', url });
+      expect(response.statusCode, url).toBe(200);
+      expect(response.headers['content-type'], url).toContain(type);
+      expect(response.body.length, url).toBeGreaterThan(100);
+    }
+  });
+
+  it('refuses to read anything outside the app', async () => {
+    for (const url of [
+      '/app/../package.json',
+      '/app/lib/../server.mjs',
+      '/app/../../.env',
+      '/app/does-not-exist.js',
+    ]) {
+      const response = await app.inject({ method: 'GET', url });
+      expect(response.statusCode, url).toBe(404);
+      expect(response.json().error.code, url).toBe('VALIDATION_FAILED');
+    }
+  });
+
+  it('can be switched off for a headless API', async () => {
+    const service = new LedgerService(new InMemoryStore(), {
+      functionalCurrency: 'USD',
+      retainedEarningsCode: '3200',
+      fxClearingCode: '3210',
+    });
+    const bare = buildServer({ service, webRoot: null });
+    await bare.ready();
+    try {
+      const response = await bare.inject({ method: 'GET', url: '/app' });
+      expect(response.statusCode).toBe(404);
+      const health = await bare.inject({ method: 'GET', url: '/health' });
+      expect(health.statusCode).toBe(200);
+    } finally {
+      await bare.close();
+    }
+  });
+
+  it('points the API index at the app', async () => {
+    const response = await app.inject({ method: 'GET', url: '/' });
+    expect(response.body).toContain('href="/app"');
   });
 });

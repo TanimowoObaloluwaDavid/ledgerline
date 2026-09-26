@@ -1,7 +1,7 @@
 {
   "name": "ledgerline",
   "version": "0.1.0",
-  "description": "A double-entry accounting engine with a REST API and CLI, in strict TypeScript.",
+  "description": "A double-entry accounting engine with a REST API, browser app and CLI, in strict TypeScript.",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -20,6 +20,7 @@
   },
   "files": [
     "dist",
+    "public",
     "README.md",
     "LICENSE"
   ],
