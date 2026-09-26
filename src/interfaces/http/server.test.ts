@@ -31,6 +31,14 @@ describe('HTTP API', () => {
     expect(response.json()).toEqual({ status: 'ok' });
   });
 
+  it('serves a browsable index at the root', async () => {
+    const response = await app.inject({ method: 'GET', url: '/' });
+    expect(response.statusCode).toBe(200);
+    expect(response.headers['content-type']).toContain('text/html');
+    expect(response.body).toContain('Ledgerline');
+    expect(response.body).toContain('/v1/reports/balance-sheet');
+  });
+
   it('lists the stock chart of accounts', async () => {
     const response = await app.inject({ method: 'GET', url: '/v1/accounts' });
     expect(response.statusCode).toBe(200);

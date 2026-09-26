@@ -201,8 +201,13 @@ otherwise; the trial balance keeps every currency separately.
 ### `GET /v1/reports/trial-balance?to=2025-01-31`
 
 ```json
-{ "report": { "asOf": "2025-01-31", "rows": [ { "code": "1100", "name": "Cash", "debit": { … }, "credit": { … } } ], "totals": { "debit": { … }, "credit": { … }, "balanced": true } } }
+{ "report": { "asOf": "2025-01-31", "rows": [ { "code": "1100", "name": "Cash", "debit": { … }, "credit": { … } } ], "totals": { "debit": { … }, "credit": { … }, "difference": { … }, "balanced": true } } }
 ```
+
+Rows include roll-up accounts next to their children, marked with
+`"isSubtotal": true` and a `depth`. `totals` counts the leaf accounts only, so
+summing the `debit` column of every row gives a larger number — filter on
+`isSubtotal === false` before totalling.
 
 ### `GET /v1/reports/balance-sheet?to=2025-01-31`
 

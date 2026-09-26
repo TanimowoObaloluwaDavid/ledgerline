@@ -215,6 +215,11 @@ export function buildServer(options: ServerOptions): FastifyInstance {
 
   app.get('/health', async () => ({ status: 'ok' }));
 
+  // A JSON API has nothing to show at `/`, which reads as "broken" to anyone who
+  // typed the address into a browser. This is the smallest thing that makes the
+  // running server explain itself.
+  app.get('/', async (_request, reply) => reply.type('text/html; charset=utf-8').send(indexPage()));
+
   app.get('/v1/accounts', async (request) => {
     const type = query(request).type;
     const accounts = await service.accounts(type === undefined ? {} : { type: parseType(type) });
@@ -455,4 +460,81 @@ function periodOf(
     ...(from === undefined ? {} : { from }),
     ...(to === undefined ? {} : { to }),
   };
+}
+
+const INDEX_ROUTES: readonly (readonly [string, string, string])[] = [
+  ['GET', '/health', 'Liveness probe'],
+  ['GET', '/v1/accounts', 'Chart of accounts'],
+  ['GET', '/v1/accounts/:code', 'One account'],
+  ['POST', '/v1/accounts', 'Create an account'],
+  ['PATCH', '/v1/accounts/:code', 'Rename, re-tag or re-parent an account'],
+  ['GET', '/v1/entries', 'Journal entries'],
+  ['GET', '/v1/entries/:id', 'One entry'],
+  ['POST', '/v1/entries', 'Post a balanced entry'],
+  ['POST', '/v1/entries/:id/reversal', 'Reverse an entry'],
+  ['GET', '/v1/fx/rates', 'Dated exchange rates'],
+  ['POST', '/v1/fx/rates', 'Record an exchange rate'],
+  ['GET', '/v1/recurring', 'Recurring rules'],
+  ['GET', '/v1/recurring/:id/occurrences', 'Preview occurrences'],
+  ['POST', '/v1/recurring', 'Create a recurring rule'],
+  ['POST', '/v1/recurring/run', 'Post everything due'],
+  ['GET', '/v1/reports/trial-balance', 'Trial balance'],
+  ['GET', '/v1/reports/balance-sheet', 'Balance sheet'],
+  ['GET', '/v1/reports/income-statement', 'Income statement'],
+  ['GET', '/v1/reports/accounts/:code', 'Account statement'],
+  ['GET', '/v1/periods', 'Closed periods'],
+  ['POST', '/v1/periods/close', 'Close a period into retained earnings'],
+  ['GET', '/v1/verify', 'Integrity check'],
+];
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
+function indexPage(): string {
+  const rows = INDEX_ROUTES.map(
+    ([method, path, description]) =>
+      `<tr><td><code>${escapeHtml(method)}</code></td>` +
+      `<td><a href="${escapeHtml(path.replace(':code', '1100').replace(':id', 'self'))}">` +
+      `${escapeHtml(path)}</a></td><td>${escapeHtml(description)}</td></tr>`,
+  ).join('\n');
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledgerline</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+         margin: 0 auto; max-width: 52rem; padding: 2.5rem 1.25rem 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
+  p.lede { margin: 0 0 2rem; opacity: .7; }
+  table { border-collapse: collapse; width: 100%; font-size: .94rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(128,128,128,.28); }
+  th { font-weight: 600; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; opacity: .6; }
+  td:first-child { width: 4.5rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .88em; }
+  a { color: inherit; }
+  footer { margin-top: 2.5rem; font-size: .85rem; opacity: .65; }
+</style>
+</head>
+<body>
+  <h1>Ledgerline</h1>
+  <p class="lede">A double-entry accounting engine. The books are balanced; the numbers below are live.</p>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>What it does</th></tr></thead>
+    <tbody>
+${rows}
+    </tbody>
+  </table>
+  <footer>Amounts are exact: integers of minor units, never floats. See <code>docs/API.md</code>.</footer>
+</body>
+</html>
+`;
 }
