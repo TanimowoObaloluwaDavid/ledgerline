@@ -12,6 +12,11 @@ integer minor units and never a float, the journal is append-only, every entry
 balances per currency, exchange rates are dated rather than assumed, and a closed
 period stays closed.
 
+**Ledgerline is my software and I own it.** You may use it under the MIT licence
+below without ever talking to me. If you want something the licence does not
+cover — help, a feature, a tailored build, or just to say hello —
+[get in touch](#ownership-and-contact).
+
 - [Try it](#try-it)
 - [What's in the box](#whats-in-the-box)
 - [The rules it will not bend](#the-rules-it-will-not-bend)
@@ -28,6 +33,8 @@ period stays closed.
 - [Testing](#testing)
 - [Requirements](#requirements)
 - [Documentation](#documentation)
+- [Ownership and contact](#ownership-and-contact)
+- [License](#license)
 
 ## Try it
 
@@ -356,6 +363,35 @@ run against both.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — the invariants, the layering, and
   the trade-offs worth arguing about.
 
+## Ownership and contact
+
+Ledgerline is my software. I designed it, I wrote it, I maintain it, and I hold the
+copyright. There is no company behind it and no team: one maintainer, which is
+also why it moves when I have an evening free.
+
+**The MIT licence is the deal, and it is a real one.** Use Ledgerline for
+anything, commercial work included. Modify it, put it inside your own product,
+change my code. The only thing you owe is the copyright notice. Nothing in the
+licence is contingent on contacting me, and I would not want it to be.
+
+**So why ask you to get in touch?** For everything the licence does not cover:
+
+- You want help installing it, or a second opinion on your accounts and closing.
+- You want a feature, a fix, or a version shaped around your workflow.
+- You want support with a deadline attached, or someone answerable for it.
+- You want to sponsor the work, or hire me to build the next thing.
+- You just want to say hello. That is allowed too.
+
+| What you want | Where |
+| --- | --- |
+| A bug, a question, a feature request | [Open an issue](https://github.com/TanimowoObaloluwaDavid/ledgerline/issues/new) |
+| Anything that needs a reply from a person | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
+
+I read both, and I answer email. A bug with a reproduction gets fixed first; a
+reply can take a few days, because this is one person with one inbox.
+
+— **Tanimowo Obaloluwa**, author and maintainer
+
 ## License
 
-MIT © 2026 Tanimowo Obaloluwa
+MIT © 2026 Tanimowo Obaloluwa. The full text is in [LICENSE](LICENSE).
