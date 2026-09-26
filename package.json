@@ -1,6 +1,6 @@
 {
   "name": "ledgerline",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A double-entry accounting engine with a REST API, browser app and CLI, in strict TypeScript.",
   "type": "module",
   "license": "BUSL-1.1",

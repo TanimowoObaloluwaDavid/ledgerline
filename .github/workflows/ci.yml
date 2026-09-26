@@ -65,6 +65,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:coverage
+      # Tokenless for a public repository. If this ever goes private, add a
+      # CODECOV_TOKEN secret and pass it as `token`.
+      - uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
       - uses: actions/upload-artifact@v7
         with:
           name: coverage-report

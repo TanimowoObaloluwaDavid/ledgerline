@@ -4,8 +4,12 @@ A double-entry accounting engine with a browser app, a REST API and a CLI.
 Strict TypeScript, exact money, no build step.
 
 [![CI](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml/badge.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/TanimowoObaloluwaDavid/ledgerline/branch/main/graph/badge.svg)](https://codecov.io/gh/TanimowoObaloluwaDavid/ledgerline)
+[![npm](https://img.shields.io/npm/v/ledgerline.svg)](https://www.npmjs.com/package/ledgerline)
+[![GitHub release](https://img.shields.io/github/v/release/TanimowoObaloluwaDavid/ledgerline.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/releases/latest)
 [![Node](https://img.shields.io/badge/node-22.15%20%7C%2024-5FA04E.svg)](https://nodejs.org)
 [![License: BUSL 1.1](https://img.shields.io/badge/license-BUSL--1.1-yellow.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/github/sponsors/TanimowoObaloluwaDavid?style=social)](https://github.com/sponsors/TanimowoObaloluwaDavid)
 
 Ledgerline keeps books the way an accountant would want them kept: money is exact
 integer minor units and never a float, the journal is append-only, every entry
@@ -403,6 +407,7 @@ permission than have you reimplement a ledger badly.
 | What you want | Where |
 | --- | --- |
 | Permission, or a commercial licence | Email me: [codex5358@gmail.com](mailto:codex5358@gmail.com) |
+| To fund the work so it keeps moving | [Sponsor on GitHub](https://github.com/sponsors/TanimowoObaloluwaDavid) |
 | A bug report or a feature request | [Open an issue](https://github.com/TanimowoObaloluwaDavid/ledgerline/issues/new) |
 | To read, fork or evaluate the code | No permission needed |
 
