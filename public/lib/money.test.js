@@ -159,7 +159,7 @@ describe('display helpers', () => {
 
   it('handles a three-decimal currency', () => {
     expect(
-      magnitude({ currency: 'BHD', minor: '-1234', decimal: '-1.234', exponent: 3 }).decimal,
+      magnitude({ currency: 'KWD', minor: '-1234', decimal: '-1.234', exponent: 3 }).decimal,
     ).toBe('1.234');
   });
 });

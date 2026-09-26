@@ -1,14 +1,39 @@
 # Ledgerline
 
-A double-entry accounting engine with a REST API and a CLI, written in strict
-TypeScript with no runtime dependencies beyond Fastify and Zod.
+A double-entry accounting engine with a browser app, a REST API and a CLI.
+Strict TypeScript, exact money, no build step.
 
-Ledgerline keeps books the way an accountant would want them kept: money is
-exact (integer minor units, never a float), the ledger is append-only, every
-entry balances per currency, exchange rates are dated rather than assumed, and a
-closed period stays closed.
+[![CI](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml/badge.svg)](https://github.com/TanimowoObaloluwaDavid/ledgerline/actions/workflows/ci.yml)
+[![Node](https://img.shields.io/badge/node-22.15%20%7C%2024-5FA04E.svg)](https://nodejs.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3D7EA6.svg)](LICENSE)
 
-```
+Ledgerline keeps books the way an accountant would want them kept: money is exact
+integer minor units and never a float, the journal is append-only, every entry
+balances per currency, exchange rates are dated rather than assumed, and a closed
+period stays closed.
+
+- [Try it](#try-it)
+- [What's in the box](#whats-in-the-box)
+- [The rules it will not bend](#the-rules-it-will-not-bend)
+- [Why the money is exact](#why-the-money-is-exact)
+- [The browser app](#the-browser-app)
+- [The CLI](#the-cli)
+- [The REST API](#the-rest-api)
+- [As a library](#as-a-library)
+- [Docker](#docker)
+- [Reports](#reports)
+- [Project layout](#project-layout)
+- [Scripts](#scripts)
+- [Configuration](#configuration)
+- [Testing](#testing)
+- [Requirements](#requirements)
+- [Documentation](#documentation)
+
+## Try it
+
+```bash
+git clone https://github.com/TanimowoObaloluwaDavid/ledgerline.git
+cd ledgerline
 npm install
 npm run demo
 ```
@@ -20,65 +45,127 @@ Posting rent: created 3 entries
 Revenue
     Sales                                  12500.00
   Total                                    12500.00
-
 Expenses
     Cost of Goods Sold                      4000.00
     Rent                                    7500.00
   Total                                    11500.00
-
 Net income: 1000.00 USD
 
 Books are balanced.
 ```
 
-## What it does
+That is a real book being opened, posted to and reported on. To drive one
+yourself, `npm run serve` and open
+**<http://127.0.0.1:3000/app>**.
 
-- **Chart of accounts** with a hierarchy, five account types, per-account
-  currency constraints, and system accounts that seed a new book.
-- **Journal** that is append-only, balanced per currency, rejects postings to
+## What's in the box
+
+| Surface | What it is |
+| --- | --- |
+| **Browser app** | A no-build front end for the whole book: post entries, read the journal, run the reports, close a period |
+| **REST API** | Fastify, Zod-validated at the edge, idempotent writes, error codes that decide the status |
+| **CLI** | 17 commands over the same use cases, for scripts and `make`-style pipelines |
+| **Library** | The domain and the service as importable TypeScript, with the stores behind a port |
+| **Stores** | In-memory for tests, SQLite (`node:sqlite`) for everything else, both behind optimistic version checks |
+
+The engine underneath them:
+
+- **Chart of accounts** with a hierarchy, five account types, per-account currency
+  constraints, and a system chart that seeds every new book.
+- **Journal** that is append-only, balanced per currency, refuses postings to
   roll-up parents, and reverses rather than edits.
-- **Exact money** in integer minor units with correct exponents (`JPY` has 0,
-  `USD` 2, `BHD` 3) and banker's rounding for conversions.
-- **Dated exchange rates** with three valuation modes (last rate, average rate,
-  closing rate) and half-even rounding; a missing rate is an error, never a
-  guess.
+- **Exact money** in integer minor units with real currency exponents (`JPY` has
+  0, `USD` 2, `KWD` 3) and half-even rounding on conversion.
+- **Dated exchange rates** with closing-rate and average-rate valuation, and a
+  missing rate is an error rather than a guess.
 - **Recurring entries** on daily, weekly, monthly, quarterly and yearly
-  schedules, with anchored month arithmetic (a rule that starts on the 31st
-  stays on the 31st whenever the month is long enough) and weekend adjustment.
+  schedules, with anchored month arithmetic — a rule anchored on the 31st runs
+  31 Jan, 28 Feb, 31 Mar, 30 Apr — and weekend adjustment.
 - **Period closing** that moves temporary-account balances into retained
   earnings in one generated entry, translating foreign-currency results through
   an FX clearing account.
-- **Reports**: trial balance, balance sheet, income statement, and per-account
-  statements with a correct opening balance.
-- **Two front ends**: a Fastify REST API and a CLI over the same use cases.
-- **Two stores**: in-memory for tests, SQLite (`node:sqlite`) for everything
-  else, both behind optimistic version checks.
-- **Idempotent writes** keyed by `Idempotency-Key`, so a retried request cannot
-  double-post.
+- **Idempotent writes** keyed by `Idempotency-Key`, so a request retried after a
+  timeout cannot double-post.
 
-## Quick start
+## The rules it will not bend
 
-### As a library
+These are enforced in the domain, not in the interface, so the API, the CLI, the
+browser app and your own code all get the same answer.
 
-```ts
-import { InMemoryStore, LedgerService } from 'ledgerline';
+| Rule | Why |
+| --- | --- |
+| Every entry balances, per currency | Debits equal credits or the entry is rejected |
+| Amounts are integers of minor units | `0.1 + 0.2` is not a bug you can report |
+| A posting to a currency-constrained account must match it | No silent FX on a cash account |
+| Postings cannot target roll-up parents or computed accounts | A subtotal is derived, not posted to |
+| A dated rate is required to translate | An invented rate is a fabricated balance sheet |
+| Entries are never edited or deleted | Corrections are reversals, so history survives |
+| A closed period refuses new entries | Otherwise the closing entry is invalidated silently |
+| Reports present in the functional currency | One currency on the face of the statements |
 
-const books = new LedgerService(new InMemoryStore(), { functionalCurrency: 'USD' });
+## Why the money is exact
 
-await books.postEntry({
-  date: '2025-01-05',
-  memo: 'Invoice 1',
-  postings: [
-    { account: '1200', side: 'debit', amount: '12500.00 USD' },
-    { account: '4100', side: 'credit', amount: '12500.00 USD' },
-  ],
-});
+`0.1 + 0.2 !== 0.3` is not an accounting problem, it is a representation problem,
+and no amount of care at the call site fixes it. Every amount is an integer count
+of minor units, carried in a `bigint`, with the currency's exponent deciding how
+those integers print:
 
-const sheet = await books.balanceSheet({ to: '2025-01-31' });
-console.log(sheet.totalAssets.toDecimalString(), sheet.balanced); // 12500.00 true
+| Amount | Minor units | Exponent |
+| --- | --- | --- |
+| `12500.00 USD` | `1250000` | 2 |
+| `1500 JPY` | `1500` | 0 |
+| `12.345 KWD` | `12345` | 3 |
+
+JSON numbers are doubles, so `9007199254740993` cannot survive one, and every
+amount crosses the wire as a string:
+
+```json
+{
+  "currency": "USD",
+  "minor": "1250000",
+  "decimal": "12500.00",
+  "exponent": 2
+}
 ```
 
-### CLI
+Rates are exact ratios rather than floats, so translating `100.00 EUR` at `1.1`
+is `100000 × 11 ÷ 10 = 110000` minor units — `110.00 USD`, exactly, every time —
+instead of a float that happens to print as `110.00`. Where a result genuinely
+cannot be exact, the division rounds halves to even rather than to whatever the
+nearest binary approximation suggests.
+
+## The browser app
+
+```bash
+npm run serve
+```
+
+Open <http://127.0.0.1:3000/app>. That is a working book, not a screenshot of
+one:
+
+| View | What you can do |
+| --- | --- |
+| **Dashboard** | Debits, credits and net for the period, a trial-balance check, revenue against expenses, recent entries |
+| **New entry** | Add postings by account; it will not submit until the debits equal the credits, and it tells you which side is missing |
+| **Journal** | Filter by date range, account or memo; reverse an entry instead of editing it |
+| **Accounts** | Browse the chart with balances, create accounts |
+| **Reports** | Trial balance, balance sheet, income statement, and a statement for any account |
+| **Currencies** | Record dated exchange rates |
+| **Close period** | Close into retained earnings, and see what it did |
+
+It is plain ES modules and one stylesheet in [`public/`](public), served by the
+same Fastify process as the API. There is no build step, no bundler and no client
+framework — the directory is the whole thing, and you can read it in one sitting.
+The client does its own arithmetic in `BigInt` over the same minor-unit strings
+the server sends, because a form that balances a 19-digit amount in floats is
+worse than one that refuses to submit.
+
+`LEDGERLINE_WEB_DIR` points it at another directory; `LEDGERLINE_WEB_DIR=none`
+serves the API on its own. Assets come from a fixed allowlist rather than a
+path, and every response carries `default-src 'none'; script-src 'self'`, which
+the app can afford because it has no inline script and no inline style.
+
+## The CLI
 
 The CLI keeps its ledger in a SQLite file. Set `LEDGERLINE_DB`; without it the
 book is in memory and disappears when the command ends.
@@ -89,41 +176,24 @@ export LEDGERLINE_DB=./data/ledger.db
 npm run cli -- account:list
 npm run cli -- entry:post --date=2025-01-05 --memo="Invoice 1" \
   --posting=1200:debit:12500.00 --posting=4100:credit:12500.00 --key=inv-1
+npm run cli -- entry:list --from=2025-01-01 --to=2025-01-31
 npm run cli -- report:income --from=2025-01-01 --to=2025-01-31
+npm run cli -- fx:rate --base=EUR --quote=USD --rate=1.10 --date=2025-01-01
 npm run cli -- period:close --to=2025-01-31 --by=alice
 npm run cli -- verify
 ```
 
-A bare amount means the book's functional currency, so `--posting=1100:debit:5000.00`
-is `5000.00 USD`. Pass one explicitly with a comma: `--posting=1100:debit:5000.00,EUR`.
+A bare amount means the book's functional currency, so
+`--posting=1100:debit:5000.00` is `5000.00 USD`. Pass one explicitly with a
+comma: `--posting=1100:debit:5000.00,EUR`.
 
-`npm run cli -- help` lists every command.
+`npm run cli -- help` lists all 17 commands, and `demo` seeds a book and prints a
+statement. Errors print as `CODE: message` and exit `0` for success, `1` for a
+domain error, `2` for a usage error.
 
-### Browser
+## The REST API
 
-```bash
-npm run serve
-```
-
-Then open **<http://127.0.0.1:3000/app>**.
-
-That is a working book: post entries on a form that refuses to submit until the
-debits equal the credits, read the journal, browse the chart of accounts, and
-look at the trial balance, balance sheet, income statement and any account's
-statement. It also closes a period into retained earnings and records exchange
-rates.
-
-The app is plain ES modules and one stylesheet in [`public/`](public), served by
-the same process as the API. There is no build step, no bundler and no client
-framework — the directory is the whole thing, and you can read it in one sitting.
-Set `LEDGERLINE_WEB_DIR` to point somewhere else, or to `none` to serve the API
-on its own.
-
-### HTTP
-
-```bash
-npm run serve
-```
+`npm run serve`, then:
 
 ```
 POST /v1/entries
@@ -145,46 +215,95 @@ Idempotency-Key: 7f3c...
 ```
 
 Send the same `Idempotency-Key` again and you get `200 OK` with the original
-entry instead of a second one. The full route reference is in
-[docs/API.md](docs/API.md).
+entry instead of a second one. The status code is derived from the domain error
+code in one map, so it never depends on the wording of a message.
+[`GET /`](http://127.0.0.1:3000/) is a browsable index of every route, and the
+full reference is in [docs/API.md](docs/API.md).
 
-## How it is put together
+## As a library
+
+```bash
+npm install ledgerline
+```
+
+```ts
+import { InMemoryStore, LedgerService } from 'ledgerline';
+
+const books = new LedgerService(new InMemoryStore(), { functionalCurrency: 'USD' });
+
+const posted = await books.postEntry({
+  date: '2025-01-05',
+  memo: 'Invoice 1',
+  postings: [
+    { account: '1200', side: 'debit', amount: '12500.00 USD' },
+    { account: '4100', side: 'credit', amount: '12500.00 USD' },
+  ],
+});
+
+posted.created; // true
+posted.entry.sequence; // 1
+
+const sheet = await books.balanceSheet({ to: '2025-01-31' });
+sheet.totalAssets.toDecimalString(); // '12500.00'
+sheet.balanced; // true
+
+const report = await books.verify();
+report.balanced; // true
+report.entries; // 1
+```
+
+Swap `InMemoryStore` for `SqliteStore` to keep the book on disk. The domain is
+exported too — `Money`, `Ledger`, `trialBalance`, `occurrences` and friends — so
+you can use the accounting without the service.
+
+## Docker
+
+```bash
+docker build -t ledgerline .
+docker run --rm -p 3000:3000 -v ledgerline-data:/data ledgerline
+```
+
+Then open <http://127.0.0.1:3000/app>. The image runs as a non-root user, keeps
+its book in the `/data` volume, and serves the app and the API from one process.
+
+## Reports
+
+All four present in the book's functional currency, translated at dated rates.
+
+| Report | What it answers |
+| --- | --- |
+| Trial balance | Does every account agree, and does the whole book balance? |
+| Balance sheet | What do we own, owe, and hold at a date? |
+| Income statement | What did we make and spend over a period? |
+| Account statement | What happened in one account, with a correct opening balance? |
+
+Sections roll up the account tree, so a parent like `1000 Assets` is a subtotal
+of its children. Postings to a subtotal are rejected, because a subtotal is
+derived rather than stored.
+
+## Project layout
 
 ```
 src/domain          pure accounting. No I/O, no clock, no framework.
 src/application     use cases, the store port, optimistic versions, idempotency
 src/infrastructure  in-memory and SQLite stores
-src/interfaces      Fastify routes and the CLI
+src/interfaces      Fastify routes, the static web server and the CLI
 public              the browser app: plain ES modules, served as-is
 ```
 
-The dependency arrow only points inward: the domain knows nothing about HTTP,
-SQL or `Date.now()`, which is why the interesting parts of the accounting can be
-tested as plain functions. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for
-the invariants and the trade-offs behind them.
-
-The rules the engine will not bend:
-
-| Rule | Why |
-| --- | --- |
-| Every entry balances, per currency | Debits equal credits or the entry is rejected |
-| Amounts are integers of minor units | `0.1 + 0.2` is not a bug you can report |
-| Money posted to a currency-constrained account must match it | No silent FX on a cash account |
-| Postings cannot target roll-up parents or computed accounts | A subtotal is derived, not posted to |
-| A dated rate is required to translate | An invented rate is a fabricated balance sheet |
-| Entries are never edited or deleted | Corrections are reversals, so history survives |
-| A closed period refuses new entries | Otherwise the closing entry is invalidated silently |
-| Reports present in the functional currency | One currency on the face of the statements |
+The dependency arrow only points inward: the domain knows nothing about HTTP, SQL
+or `Date.now()`, which is why the interesting parts of the accounting can be
+tested as plain functions.
 
 ## Scripts
 
 | Script | What it does |
 | --- | --- |
 | `npm run demo` | Seeds a small book and prints an income statement |
-| `npm run cli -- <command>` | Runs the CLI against `$LEDGERLINE_DB` |
 | `npm run serve` | Starts the HTTP API and the browser app |
+| `npm run cli -- <command>` | Runs the CLI against `$LEDGERLINE_DB` |
 | `npm test` | Runs the test suite |
-| `npm run test:coverage` | Runs it with coverage |
+| `npm run test:coverage` | Runs it with a coverage floor |
 | `npm run typecheck` | `tsc --noEmit` under the strictest settings |
 | `npm run lint` / `npm run lint:fix` | Biome lint and format |
 | `npm run build` | Compiles to `dist/` |
@@ -207,26 +326,35 @@ specifiers find `./foo.ts`. There is no build step to remember and no bundler.
 | `LEDGERLINE_RETAINED_EARNINGS` | `3200` | Account that receives closed results |
 | `LEDGERLINE_FX_CLEARING` | `3210` | Account that absorbs translation differences |
 
-## Requirements
-
-Node 22.15 or newer. The default store uses `node:sqlite`, which is still
-flagged experimental by Node, so the CLI and server run with
-`--disable-warning=ExperimentalWarning` in the npm scripts. Nothing else about
-the engine depends on it: `InMemoryStore` has the same contract, and tests run
-against both.
-
 ## Testing
 
-188 tests over 15 files: the domain with property-based checks (fast-check) for
-the money and rate arithmetic, the application layer against the in-memory
-store, the SQLite store against a real temporary database, both front ends
-through their public interfaces, and the browser app's own arithmetic and HTTP
-client. `npm run test:coverage` enforces a coverage floor so a suite cannot
-quietly stop running.
+188 tests over 15 files: the domain with property-based checks (`fast-check`) for
+the money, rate and date arithmetic, the application layer against the in-memory
+store, the SQLite store against a real temporary file, the HTTP and CLI front
+ends through their public interfaces, and the browser app's own arithmetic and
+API client.
 
 ```bash
 npm run verify
 ```
+
+`npm run test:coverage` enforces a floor so a suite cannot quietly stop running.
+CI runs the whole thing on Node 22.15 and 24, and smoke-tests the built CLI from
+`dist/` so a broken build cannot pass.
+
+## Requirements
+
+Node 22.15 or newer. The SQLite store uses `node:sqlite`, which Node still flags
+experimental, so the CLI and server run with
+`--disable-warning=ExperimentalWarning` in the npm scripts. Nothing else about
+the engine depends on it: `InMemoryStore` has the same contract, and the tests
+run against both.
+
+## Documentation
+
+- [docs/API.md](docs/API.md) — every route, every error code, the wire format.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — the invariants, the layering, and
+  the trade-offs worth arguing about.
 
 ## License
 
