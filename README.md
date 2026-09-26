@@ -99,6 +99,26 @@ is `5000.00 USD`. Pass one explicitly with a comma: `--posting=1100:debit:5000.0
 
 `npm run cli -- help` lists every command.
 
+### Browser
+
+```bash
+npm run serve
+```
+
+Then open **<http://127.0.0.1:3000/app>**.
+
+That is a working book: post entries on a form that refuses to submit until the
+debits equal the credits, read the journal, browse the chart of accounts, and
+look at the trial balance, balance sheet, income statement and any account's
+statement. It also closes a period into retained earnings and records exchange
+rates.
+
+The app is plain ES modules and one stylesheet in [`public/`](public), served by
+the same process as the API. There is no build step, no bundler and no client
+framework — the directory is the whole thing, and you can read it in one sitting.
+Set `LEDGERLINE_WEB_DIR` to point somewhere else, or to `none` to serve the API
+on its own.
+
 ### HTTP
 
 ```bash
@@ -135,6 +155,7 @@ src/domain          pure accounting. No I/O, no clock, no framework.
 src/application     use cases, the store port, optimistic versions, idempotency
 src/infrastructure  in-memory and SQLite stores
 src/interfaces      Fastify routes and the CLI
+public              the browser app: plain ES modules, served as-is
 ```
 
 The dependency arrow only points inward: the domain knows nothing about HTTP,
@@ -161,7 +182,7 @@ The rules the engine will not bend:
 | --- | --- |
 | `npm run demo` | Seeds a small book and prints an income statement |
 | `npm run cli -- <command>` | Runs the CLI against `$LEDGERLINE_DB` |
-| `npm run serve` | Starts the HTTP API |
+| `npm run serve` | Starts the HTTP API and the browser app |
 | `npm test` | Runs the test suite |
 | `npm run test:coverage` | Runs it with coverage |
 | `npm run typecheck` | `tsc --noEmit` under the strictest settings |
@@ -182,6 +203,7 @@ specifiers find `./foo.ts`. There is no build step to remember and no bundler.
 | `LEDGERLINE_PORT` | `3000` | HTTP port |
 | `LEDGERLINE_LOG` | `false` | Fastify request logging |
 | `LEDGERLINE_CURRENCY` | `USD` | Functional currency for all reports |
+| `LEDGERLINE_WEB_DIR` | `public/` | Where the browser app lives, or `none` |
 | `LEDGERLINE_RETAINED_EARNINGS` | `3200` | Account that receives closed results |
 | `LEDGERLINE_FX_CLEARING` | `3210` | Account that absorbs translation differences |
 
@@ -195,11 +217,12 @@ against both.
 
 ## Testing
 
-154 tests over 12 files: the domain with property-based checks (fast-check) for
+188 tests over 15 files: the domain with property-based checks (fast-check) for
 the money and rate arithmetic, the application layer against the in-memory
-store, the SQLite store against a real temporary database, and both front ends
-through their public interfaces. `npm run test:coverage` enforces a coverage
-floor so a suite cannot quietly stop running.
+store, the SQLite store against a real temporary database, both front ends
+through their public interfaces, and the browser app's own arithmetic and HTTP
+client. `npm run test:coverage` enforces a coverage floor so a suite cannot
+quietly stop running.
 
 ```bash
 npm run verify

@@ -154,7 +154,7 @@ corrupt a stored rule.
 
 ## The outer layers
 
-Both front ends are thin and share the same use cases.
+All three front ends are thin and share the same use cases.
 
 **HTTP.** One rule: domain error codes decide the status, in one map
 (`statusForError`). No handler inspects an error message. Zod validates at the
@@ -166,6 +166,25 @@ turns a `Money` into JSON, and it emits `minor` as a string.
 `--frequency=monthly` and `--currency=EUR` are checked by the same code that
 checks the API's equivalents. Errors print as `CODE: message`, exit 0 for
 success, 1 for a domain error, 2 for a usage error.
+
+**Browser.** `public/` is served by the same Fastify process: plain ES modules,
+one stylesheet, no build step and no framework. Two decisions follow from that.
+
+The first is that assets are served from an allowlist (`web.ts`) rather than from
+a path. Adding a file to the app means adding it to the list, and in exchange
+there is no traversal to get wrong — a request for `..%2f..%2f.env` matches
+nothing and is a 404. The same files are read through `isInside`, so a bug in the
+table still cannot escape the web root.
+
+The second is that the app can serve a strict `Content-Security-Policy`. It has
+no inline script and no inline style, so the chart is SVG attributes and the
+report indentation is a class name rather than a computed width. `default-src
+'none'` is the policy's floor, and nothing in the app needs to be excepted.
+
+The client does its own arithmetic in `BigInt`, on the same `minor` strings the
+server sends, because a browser form that balances a 19-digit amount in floats is
+worse than one that refuses to submit. It is the same reasoning as the domain's,
+arrived at twice.
 
 ## Decisions worth arguing about
 
@@ -182,5 +201,11 @@ success, 1 for a domain error, 2 for a usage error.
   off-by-one-day bugs.
 - **No dependency injection framework.** Constructor parameters. The graph is
   small enough that a container would be more code than it removes.
+- **A no-build front end in a strict-TypeScript project.** The client is plain
+  JavaScript with JSDoc types, which is the one place the type checking stops.
+  The alternative — compiling the client and serving `dist/` — means two
+  different code paths in development and production, and a build step in a
+  project whose selling point is that there isn't one. The client's own
+  arithmetic is covered by tests instead.
 - **Reopening is manual.** Automating it invites a machine to quietly unbalance
   a period that people have already reported on.
